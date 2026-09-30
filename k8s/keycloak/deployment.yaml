@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:26.3
+          args: ["start-dev", "--import-realm"]
+          env:
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              value: admin
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              value: admin
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            - name: KC_HOSTNAME
+              value: http://localhost:8081
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: management
+              containerPort: 9000
+          volumeMounts:
+            - name: realm
+              mountPath: /opt/keycloak/data/import
+              readOnly: true
+          startupProbe:
+            httpGet:
+              path: /health/started
+              port: management
+            periodSeconds: 5
+            failureThreshold: 36
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: management
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: management
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+      volumes:
+        - name: realm
+          configMap:
+            name: keycloak-realm

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: product-service-config
+  namespace: products
+data:
+  SPRING_PROFILES_ACTIVE: postgres
+  DB_URL: jdbc:postgresql://postgres:5432/products
+  KEYCLOAK_ISSUER_URI: http://localhost:8081/realms/product-service
+  KEYCLOAK_JWK_SET_URI: http://keycloak.platform.svc.cluster.local:8080/realms/product-service/protocol/openid-connect/certs
+  OTLP_ENDPOINT: http://otel-lgtm.platform.svc.cluster.local:4318

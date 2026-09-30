@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: products
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform

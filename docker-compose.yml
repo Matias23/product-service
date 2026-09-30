@@ -11,7 +11,7 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - ./docker/keycloak:/opt/keycloak/data/import:ro
+      - ./k8s/keycloak/realm:/opt/keycloak/data/import:ro
     healthcheck:
       test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q UP <&3"]
       interval: 10s
@@ -27,7 +27,7 @@ services:
       GF_SMTP_FROM_ADDRESS: grafana@product-service.local
       GF_SMTP_FROM_NAME: Grafana product-service
     volumes:
-      - ./docker/grafana/alerting/product-service-alerts.yaml:/otel-lgtm/grafana/conf/provisioning/alerting/product-service-alerts.yaml:ro
+      - ./k8s/observability/grafana/alerting/product-service-alerts.yaml:/otel-lgtm/grafana/conf/provisioning/alerting/product-service-alerts.yaml:ro
     ports:
       - "3000:3000"   # Grafana UI
       - "4317:4317"   # OTLP gRPC

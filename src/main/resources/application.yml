@@ -38,6 +38,9 @@ springdoc:
       use-pkce-with-authorization-code-grant: true
 
 management:
+  opentelemetry:
+    resource-attributes:
+      "[service.instance.id]": ${HOSTNAME:local}
   endpoints:
     web:
       exposure:
