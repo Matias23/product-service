@@ -38,3 +38,25 @@ services:
     ports:
       - "8025:8025"   # Web inbox UI
       - "1025:1025"   # SMTP
+
+  product-service:
+    build: .
+    image: product-service:0.1.0
+    environment:
+      KEYCLOAK_ISSUER_URI: http://localhost:8081/realms/product-service
+      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/product-service/protocol/openid-connect/certs
+      OTLP_ENDPOINT: http://otel-lgtm:4318
+    ports:
+      - "8080:8080"
+    stop_grace_period: 30s
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      otel-lgtm:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health/readiness"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s

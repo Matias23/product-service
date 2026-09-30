@@ -1,0 +1,11 @@
+target/
+.git/
+.idea/
+.vscode/
+*.iml
+.DS_Store
+postman/
+docker/
+k8s/
+load/
+*.md
