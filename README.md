@@ -67,6 +67,33 @@ Request body:
 
 Import `postman/product-service.postman_collection.json`. The `baseUrl` collection variable defaults to `http://localhost:8080`; **Create product** stores the new id in `productId` for the subsequent requests.
 
+## Alerting
+
+Grafana alerting is provisioned as code in `docker/grafana/alerting/product-service-alerts.yaml`
+and loaded when the `otel-lgtm` container starts.
+
+| Alert | Condition | Notifies |
+|---|---|---|
+| Auth failures (401/403) >= 3 in 1m | `sum(increase(http_server_requests_milliseconds_count{status=~"401\|403"}[1m])) > 2.5`, evaluated every 10s | Email to `alerts@product-service.local`, repeated every 1m while firing, plus a resolved email |
+
+Emails are delivered to [Mailpit](https://mailpit.axllent.org/), a local SMTP server that catches all mail,
+so no credentials are needed. To deliver to a real inbox, point the `GF_SMTP_*` variables in
+`docker-compose.yml` to a real SMTP server and change `addresses` in the alerting file.
+
+| Resource | URL |
+|---|---|
+| Grafana (alert rules under *Alerting*) | http://localhost:3000 |
+| Mailpit inbox | http://localhost:8025 |
+
+Trigger the alert by sending unauthenticated requests:
+
+```bash
+docker compose up -d
+for i in 1 2 3 4 5; do curl -s -o /dev/null -w '%{http_code}\n' localhost:8080/api/v1/products; done
+```
+
+Within ~30s the rule turns *Firing* and a `[FIRING:1] Auth failures ...` email appears in Mailpit.
+
 ## Testing
 
 ```bash

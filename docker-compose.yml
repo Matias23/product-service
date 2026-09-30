@@ -21,7 +21,20 @@ services:
 
   otel-lgtm:
     image: grafana/otel-lgtm:0.11.10
+    environment:
+      GF_SMTP_ENABLED: "true"
+      GF_SMTP_HOST: mailpit:1025
+      GF_SMTP_FROM_ADDRESS: grafana@product-service.local
+      GF_SMTP_FROM_NAME: Grafana product-service
+    volumes:
+      - ./docker/grafana/alerting/product-service-alerts.yaml:/otel-lgtm/grafana/conf/provisioning/alerting/product-service-alerts.yaml:ro
     ports:
       - "3000:3000"   # Grafana UI
       - "4317:4317"   # OTLP gRPC
       - "4318:4318"   # OTLP HTTP
+
+  mailpit:
+    image: axllent/mailpit:v1.27.0
+    ports:
+      - "8025:8025"   # Web inbox UI
+      - "1025:1025"   # SMTP

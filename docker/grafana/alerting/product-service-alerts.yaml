@@ -1,0 +1,56 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: owner-email
+    receivers:
+      - uid: owner-email
+        type: email
+        settings:
+          addresses: alerts@product-service.local
+        disableResolveMessage: false
+
+groups:
+  - orgId: 1
+    name: auth-alerts
+    folder: product-service
+    interval: 10s
+    rules:
+      - uid: auth-failures-401-403
+        title: Auth failures (401/403) >= 3 in 1m
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model:
+              refId: A
+              instant: true
+              expr: sum(increase(http_server_requests_milliseconds_count{job="product-service", status=~"401|403"}[1m])) or vector(0)
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator: { type: gt, params: [2.5] }
+        for: 0s
+        noDataState: OK
+        execErrState: Error
+        labels:
+          severity: warning
+        annotations:
+          summary: '{{ .Values.B }} auth failures (401/403) in the last minute on product-service'
+        notification_settings:
+          receiver: owner-email
+          group_wait: 0s
+          group_interval: 1m
+          repeat_interval: 1m
