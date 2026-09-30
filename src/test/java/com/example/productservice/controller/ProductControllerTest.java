@@ -1,5 +1,6 @@
 package com.example.productservice.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,6 +21,7 @@ import com.example.productservice.config.SecurityConfig;
 import com.example.productservice.dto.PageResponse;
 import com.example.productservice.dto.ProductRequest;
 import com.example.productservice.dto.ProductResponse;
+import com.example.productservice.entity.Product;
 import com.example.productservice.exception.DuplicateSkuException;
 import com.example.productservice.exception.ProductNotFoundException;
 import com.example.productservice.security.ProblemDetailAccessDeniedHandler;
@@ -33,6 +35,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mapping.PropertyReferenceException;
+import org.springframework.data.util.TypeInformation;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -159,12 +163,46 @@ class ProductControllerTest {
     }
 
     @Test
+    void unexpectedError_returns500WithoutLeakingDetails() throws Exception {
+        when(productService.findById(1L)).thenThrow(new IllegalStateException("db password=secret"));
+
+        mockMvc.perform(get(BASE_URL + "/1").with(admin()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.title").value("Internal server error"))
+                .andExpect(jsonPath("$.detail").value("An unexpected error occurred"));
+    }
+
+    @Test
+    void findAll_withUnknownSortProperty_returns400() throws Exception {
+        when(productService.findAll(any(Pageable.class)))
+                .thenThrow(new PropertyReferenceException("doesNotExist", TypeInformation.of(Product.class), List.of()));
+
+        mockMvc.perform(get(BASE_URL).with(admin()).param("sort", "doesNotExist"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Invalid request parameter"))
+                .andExpect(jsonPath("$.detail").value("Unknown property 'doesNotExist'"));
+    }
+
+    @Test
+    void malformedJson_returns400NotServerError() throws Exception {
+        mockMvc.perform(post(BASE_URL).with(admin()).contentType(MediaType.APPLICATION_JSON).content("{not json"))
+                .andExpect(status().isBadRequest());
+        verifyNoInteractions(productService);
+    }
+
+    @Test
     void request_withoutToken_returns401ProblemDetail() throws Exception {
         mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isUnauthorized())
                 .andExpect(header().exists("WWW-Authenticate"))
                 .andExpect(jsonPath("$.title").value("Unauthorized"));
         verifyNoInteractions(productService);
+    }
+
+    @Test
+    void healthEndpoint_isPublic() throws Exception {
+        mockMvc.perform(get("/actuator/health/liveness"))
+                .andExpect(result -> assertThat(result.getResponse().getStatus()).isNotEqualTo(401));
     }
 
     @Test
