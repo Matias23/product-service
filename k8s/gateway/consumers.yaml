@@ -1,0 +1,45 @@
+# Anonymous consumer: requests without a valid API key (keeps the route-level 5/min limit)
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: anonymous
+  namespace: products
+  annotations:
+    kubernetes.io/ingress.class: kong
+username: anonymous
+---
+# Partner credential (dev only: real keys come from a secrets manager, never git)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: acme-api-key
+  namespace: products
+  labels:
+    konghq.com/credential: key-auth
+stringData:
+  key: acme-dev-key-123
+---
+# Partner plan: higher quota, counted per consumer (not per IP)
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: rate-limit-partner
+  namespace: products
+plugin: rate-limiting
+config:
+  minute: 100
+  limit_by: consumer
+  policy: local
+  fault_tolerant: true
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: acme
+  namespace: products
+  annotations:
+    kubernetes.io/ingress.class: kong
+    konghq.com/plugins: rate-limit-partner
+username: acme
+credentials:
+  - acme-api-key

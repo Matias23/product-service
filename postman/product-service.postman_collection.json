@@ -1,21 +1,52 @@
 {
   "info": {
     "name": "Product Service",
-    "description": "CRUD endpoints for the Product Service (Spring Boot + H2), secured with Keycloak (OAuth2 / JWT).\n\nRun the **Auth** folder first: it stores `accessToken` (admin) and `userAccessToken` (alice) in collection variables. All other requests inherit `Bearer {{accessToken}}` from the collection unless they override it.\n\n**Create product** stores the new id in `productId`, which the other requests use.",
+    "description": "CRUD endpoints for the Product Service (Spring Boot + H2), secured with Keycloak (OAuth2 / JWT).\n\nRun the **Auth** folder first: it stores `accessToken` (admin) and `userAccessToken` (alice) in collection variables. All other requests inherit `Bearer {{accessToken}}` from the collection unless they override it.\n\n**Create product** stores the new id in `productId`, which the other requests use.\n\nEvery request sends `apikey: {{partnerApiKey}}` (partner plan, 100 req/min) via the collection pre-request script. The **Gateway plans** folder compares it with anonymous access (5 req/min).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
     "type": "bearer",
-    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8000" },
-    { "key": "keycloakUrl", "value": "http://localhost:8081" },
-    { "key": "realm", "value": "product-service" },
-    { "key": "clientId", "value": "product-service-client" },
-    { "key": "accessToken", "value": "" },
-    { "key": "userAccessToken", "value": "" },
-    { "key": "productId", "value": "1" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "partnerApiKey",
+      "value": "acme-dev-key-123"
+    },
+    {
+      "key": "keycloakUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "realm",
+      "value": "product-service"
+    },
+    {
+      "key": "clientId",
+      "value": "product-service-client"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "userAccessToken",
+      "value": ""
+    },
+    {
+      "key": "productId",
+      "value": "1"
+    }
   ],
   "item": [
     {
@@ -39,22 +70,49 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
             "body": {
               "mode": "urlencoded",
               "urlencoded": [
-                { "key": "grant_type", "value": "password" },
-                { "key": "client_id", "value": "{{clientId}}" },
-                { "key": "username", "value": "admin" },
-                { "key": "password", "value": "admin" }
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{clientId}}"
+                },
+                {
+                  "key": "username",
+                  "value": "admin"
+                },
+                {
+                  "key": "password",
+                  "value": "admin"
+                }
               ]
             },
             "url": {
               "raw": "{{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
-              "host": ["{{keycloakUrl}}"],
-              "path": ["realms", "{{realm}}", "protocol", "openid-connect", "token"]
+              "host": [
+                "{{keycloakUrl}}"
+              ],
+              "path": [
+                "realms",
+                "{{realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
             }
           }
         },
@@ -75,22 +133,49 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
             "body": {
               "mode": "urlencoded",
               "urlencoded": [
-                { "key": "grant_type", "value": "password" },
-                { "key": "client_id", "value": "{{clientId}}" },
-                { "key": "username", "value": "alice" },
-                { "key": "password", "value": "alice" }
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{clientId}}"
+                },
+                {
+                  "key": "username",
+                  "value": "alice"
+                },
+                {
+                  "key": "password",
+                  "value": "alice"
+                }
               ]
             },
             "url": {
               "raw": "{{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
-              "host": ["{{keycloakUrl}}"],
-              "path": ["realms", "{{realm}}", "protocol", "openid-connect", "token"]
+              "host": [
+                "{{keycloakUrl}}"
+              ],
+              "path": [
+                "realms",
+                "{{realm}}",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
             }
           }
         }
@@ -118,15 +203,26 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Wireless Mouse\",\n  \"description\": \"Ergonomic 2.4GHz wireless mouse\",\n  \"price\": 19.99,\n  \"stock\": 10,\n  \"sku\": \"MS-{{$timestamp}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
             }
           }
         },
@@ -137,7 +233,9 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
               }
             }
           ],
@@ -145,8 +243,15 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/products/{{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products", "{{productId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                "{{productId}}"
+              ]
             }
           }
         },
@@ -168,12 +273,27 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/products?page=0&size=20&sort=name,asc",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ],
               "query": [
-                { "key": "page", "value": "0" },
-                { "key": "size", "value": "20" },
-                { "key": "sort", "value": "name,asc" }
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort",
+                  "value": "name,asc"
+                }
               ]
             }
           }
@@ -185,21 +305,35 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
               }
             }
           ],
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Wireless Mouse Pro\",\n  \"description\": \"Updated description\",\n  \"price\": 29.99,\n  \"stock\": 5,\n  \"sku\": \"MS-PRO-{{productId}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/products/{{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products", "{{productId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                "{{productId}}"
+              ]
             }
           }
         },
@@ -210,7 +344,9 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('Status is 204', () => pm.response.to.have.status(204));"]
+                "exec": [
+                  "pm.test('Status is 204', () => pm.response.to.have.status(204));"
+                ]
               }
             }
           ],
@@ -218,8 +354,88 @@
             "method": "DELETE",
             "url": {
               "raw": "{{baseUrl}}/api/v1/products/{{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products", "{{productId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                "{{productId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gateway plans",
+      "description": "Same endpoint, different Kong consumer plans.",
+      "item": [
+        {
+          "name": "Partner: list products (100/min)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Not rate limited', () => pm.expect(pm.response.code).to.not.eql(429));",
+                  "pm.test('Plan limit is 100/min', () => pm.expect(pm.response.headers.get('RateLimit-Limit')).to.eql('100'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Anonymous: list products (5/min)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.remove('apikey');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Not rate limited', () => pm.expect(pm.response.code).to.not.eql(429));",
+                  "pm.test('Plan limit is 5/min', () => pm.expect(pm.response.headers.get('RateLimit-Limit')).to.eql('5'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
             }
           }
         }
@@ -244,12 +460,20 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
             }
           }
         },
@@ -270,13 +494,25 @@
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "not-a-real-jwt", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "not-a-real-jwt",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
             }
           }
         },
@@ -287,20 +523,34 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+                ]
               }
             }
           ],
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{userAccessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userAccessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
             }
           }
         },
@@ -321,18 +571,35 @@
           "request": {
             "auth": {
               "type": "bearer",
-              "bearer": [{ "key": "token", "value": "{{userAccessToken}}", "type": "string" }]
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userAccessToken}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Not allowed\",\n  \"price\": 1.00,\n  \"stock\": 1,\n  \"sku\": \"FORBIDDEN-1\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
             }
           }
         }
@@ -348,7 +615,9 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('Status is 404', () => pm.response.to.have.status(404));"]
+                "exec": [
+                  "pm.test('Status is 404', () => pm.response.to.have.status(404));"
+                ]
               }
             }
           ],
@@ -356,8 +625,15 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/api/v1/products/999999",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products", "999999"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                "999999"
+              ]
             }
           }
         },
@@ -377,15 +653,26 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"\",\n  \"price\": -1,\n  \"stock\": -5\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
             }
           }
         },
@@ -413,25 +700,53 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('Status is 409', () => pm.response.to.have.status(409));"]
+                "exec": [
+                  "pm.test('Status is 409', () => pm.response.to.have.status(409));"
+                ]
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Duplicate\",\n  \"price\": 5.00,\n  \"stock\": 1,\n  \"sku\": \"DUP-SKU-001\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/products",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
             }
           }
         }
       ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Use the partner plan (100 req/min) for every request; requests can remove it to act as anonymous.",
+          "const key = pm.collectionVariables.get('partnerApiKey');",
+          "if (key) {",
+          "  pm.request.headers.upsert({ key: 'apikey', value: key });",
+          "}"
+        ]
+      }
     }
   ]
 }
