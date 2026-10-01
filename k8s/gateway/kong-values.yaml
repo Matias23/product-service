@@ -4,6 +4,9 @@ controller:
     ingressClass: kong
 
 gateway:
+  env:
+    tracing_instrumentations: all
+    tracing_sampling_rate: 1.0
   proxy:
     type: NodePort
     http:

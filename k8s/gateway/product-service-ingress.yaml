@@ -5,7 +5,7 @@ metadata:
   namespace: products
   annotations:
     konghq.com/strip-path: "false"
-    konghq.com/plugins: correlation-id,rate-limit-per-ip
+    konghq.com/plugins: correlation-id,rate-limit-per-ip,opentelemetry
 spec:
   ingressClassName: kong
   rules:
