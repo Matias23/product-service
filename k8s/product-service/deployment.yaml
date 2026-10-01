@@ -33,7 +33,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: product-service
-          image: product-service:0.1.0
+          image: product-service:0.2.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

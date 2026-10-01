@@ -1,0 +1,22 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: correlation-id
+  namespace: products
+plugin: correlation-id
+config:
+  header_name: X-Request-ID
+  generator: uuid
+  echo_downstream: true
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: rate-limit-per-ip
+  namespace: products
+plugin: rate-limiting
+config:
+  minute: 5
+  limit_by: ip
+  policy: local
+  fault_tolerant: true

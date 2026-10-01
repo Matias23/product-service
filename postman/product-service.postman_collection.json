@@ -9,7 +9,7 @@
     "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "baseUrl", "value": "http://localhost:8000" },
     { "key": "keycloakUrl", "value": "http://localhost:8081" },
     { "key": "realm", "value": "product-service" },
     { "key": "clientId", "value": "product-service-client" },

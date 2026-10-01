@@ -12,6 +12,8 @@ resources:
   - product-service/configmap.yaml
   - product-service/deployment.yaml
   - product-service/service.yaml
+  - gateway/product-service-ingress.yaml
+  - gateway/plugins.yaml
 configMapGenerator:
   - name: keycloak-realm
     namespace: platform

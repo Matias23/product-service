@@ -1,0 +1,21 @@
+# Values for the kong/ingress chart (Kong Ingress Controller + Kong Gateway, DB-less)
+controller:
+  ingressController:
+    ingressClass: kong
+
+gateway:
+  proxy:
+    type: NodePort
+    http:
+      enabled: true
+      servicePort: 80
+      containerPort: 8000
+      nodePort: 30080
+    tls:
+      enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
